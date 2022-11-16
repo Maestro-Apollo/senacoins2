@@ -1,0 +1,169 @@
+<?php
+session_start();
+
+include('../class/database.php');
+class loginPage extends database
+{
+
+    protected $link;
+
+    public function loginFunction()
+    {
+        if (isset($_POST['submit'])) {
+            $username = addslashes(trim($_POST['username']));
+            $email = trim($_POST['email']);
+            $seed = str_split('abcdefghijklmnopqrstuvwxyz'
+                . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                . '0123456789'); // and any other characters
+            shuffle($seed); // probably optional since array_is randomized; this may be redundant
+            $rand = '';
+            foreach (array_rand($seed, 6) as $k) $rand .= $seed[$k];
+
+            $code = $rand;
+            $text = $username . $email . $code . time();
+            $hash = md5($text);
+
+            $sqlP = "SELECT * from premium_user where username = '$username' ";
+            $resP = mysqli_query($this->link, $sqlP);
+            $sqlS = "SELECT * from standard_user where username = '$username' ";
+            $resS = mysqli_query($this->link, $sqlS);
+            $x = 0;
+
+            if (mysqli_num_rows($resP) > 0) {
+                $x = 1;
+                $sql = "UPDATE `premium_user` SET `hash`= '$hash',`code`= '$code' WHERE username = '$username'";
+            }
+            if (mysqli_num_rows($resS) > 0) {
+                $x = 1;
+                $sql = "UPDATE `standard_user` SET `hash`= '$hash',`code`= '$code' WHERE username = '$username'";
+            }
+            if ($x == 0) {
+                return 'Please Sign Up';
+            }
+            $res = mysqli_query($this->link, $sql);
+            if ($res) {
+                // $subject = "Minterrordatabase: Password Change";
+                // $message = 'Your code is: ';
+                // $message .= "<b>$code</b><br>";
+                // $message .= "This is one time code";
+                // $message .= "Click this link: <br>";
+                // $message .= '<a style="padding:10px 60px;background-color: #F3CC3C;color:#000;font-weight:600;text-decoration:none" href="https://minterrordatabase.com/page/recovery_code.php?recovery=' . $hash . '">Recover Password</a>';
+                // $headers = "From: info@joinautonomy.eu \r\n";
+                // $headers .= "MIME-Version: 1.0" . "\r\n";
+                // $headers .= "Content-type: text/html;charset=UTF-8" . "\r\n";
+                // if (mail($email, $subject, $message, $headers)) {
+                //     return 'Email is Send!';
+                // }
+
+                header('location:recovery_code.php?recovery=' . $hash);
+            }
+        }
+        # code...
+    }
+}
+$obj = new loginPage;
+$objLog = $obj->loginFunction();
+// $seed = str_split('abcdefghijklmnopqrstuvwxyz'
+//     . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+//     . '0123456789'); // and any other characters
+// shuffle($seed); // probably optional since array_is randomized; this may be redundant
+// $rand = '';
+// foreach (array_rand($seed, 6) as $k) $rand .= $seed[$k];
+
+// echo '<h1 class="text-white">' . $rand . '</h1>';
+
+
+?>
+
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <title>Forget Password</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/sign-in/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/docs/4.4/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <!-- Favicons -->
+
+
+
+    <style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="../css/signin.css" rel="stylesheet">
+
+</head>
+
+<body class="text-center" style="background-color: #1c1d26">
+    <form method="post" class="form-signin">
+
+        <!-- <a href="#"
+            style="padding:10px 60px;background-color: #F3CC3C;color:#000;font-weight:600;text-decoration:none">Hello</a> -->
+
+        <img class="wow fadeIn" src="../images/senacoins3(1).png" alt="" width="100%">
+        <h1 class="h3 mb-3 font-weight-bold text-light wow fadeInUp">Forget Password</h1>
+        <?php if ($objLog) { ?>
+        <div class="alert alert-light wow fadeIn">
+            <p class="font-weight-bold"><?php echo $objLog; ?></p>
+        </div>
+        <?php } ?>
+        <label for="inputUsername" class="sr-only wow fadeInUp">Username</label>
+        <input type="text" name="username" id="inputUsername" class="form-control wow fadeInUp"
+            placeholder="Enter Username" data-wow-delay=".5s" required autofocus>
+        <label for="email" class="sr-only wow fadeInUp mt-3">Email</label>
+        <input type="email" name="email" id="email" class="form-control wow fadeInUp mt-3"
+            placeholder="Enter Email Address" data-wow-delay=".5s" required autofocus>
+
+        <!-- <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required> -->
+
+        <button name="submit" class="btn btn-lg btn-danger btn-block wow fadeInUp mt-3" data-wow-delay=".9s"
+            type="submit">Send email</button>
+    </form>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <script src="../js/wow.js"></script>
+    <script>
+    new WOW().init();
+    </script>
+</body>
+
+</html>

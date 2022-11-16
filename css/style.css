@@ -1,0 +1,51 @@
+* {
+    padding: 0;
+    margin: 0;
+    outline: 0;
+}
+
+img {
+    width: 100%;
+}
+
+.navbar {
+    background-color: #D01110;
+}
+
+.navbar .navbar-brand {
+    width: 100px;
+}
+
+.navbar .collapse a {
+    color: #ffffff !important;
+}
+
+.back_img {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../images/australian-coins-4952628_1920.jpg');
+    padding: 250px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.form_section {
+    border: 2px solid #000000;
+    box-shadow: 0px 0px 10px;
+    padding: 50px;
+    width: 50%;
+    margin: 100px auto;
+}
+
+#myTable .img_div {
+    position: relative;
+}
+
+#myTable .img_div span {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.pricing-header img {
+    width: 200px;
+}
